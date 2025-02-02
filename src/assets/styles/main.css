@@ -1,0 +1,29 @@
+@import './base.css';
+
+
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-weight: normal;
+}
+
+ul{
+  list-style: none;
+}
+
+.bg-success{
+  background-color: #affad5;
+}
+
+.bg-error{
+  background-color: #ffb2b3;
+}
+
+.text-success{
+  color: #008236;
+}
+.text-error{
+  color: #C10007;
+}
