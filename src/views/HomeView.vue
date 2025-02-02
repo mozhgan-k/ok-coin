@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import type { ITicker } from "@/types";
+import { onMounted, onUnmounted, ref } from "vue";
+import type { ILiveData, ITicker } from "@/types";
 import type { Ref } from "vue";
 
 const tickers: Ref<ITicker[] | null> = ref(null)
@@ -17,29 +17,126 @@ const getCoinsData = async () => {
       const percentage = (difference / item.low_24h) * 100;
       return {
         ...item,
-        difference_24: percentage.toFixed(2)
+        difference_24: percentage.toFixed(2),
+        formattedPrice: parseFloat(item.last).toLocaleString() + " USDT"
       }
     })
-    console.log(tickers.value);
 
   } catch (error) {
     console.error('error while getting tickers', error);
   }
 }
 
-onMounted(getCoinsData)
+const socket: Ref<WebSocket | null> = ref(null)
+const status = ref("Disconnected")
+const liveData:Ref<ITicker[]> = ref([])
+const connectWebSocket = () => {
+  socket.value = new WebSocket("wss://wsg.ok-ex.io/ws")
+
+  socket.value.addEventListener('open', (event) => {
+    console.log('WebSocket connection opened:', event);
+    status.value = 'Connected';
+
+    // Send a subscription message to the server
+    const subscribeMessage = JSON.stringify({
+      args: [
+        {channel: "tickers", instId: "SOL-USDT"},
+        {channel: "tickers", instId: "BTC-USDT" },
+        {channel: "tickers", instId: "ETH-USDT"},
+        {channel: "tickers", instId: "OP-USDT"},
+        {channel: "tickers", instId: "AVAX-USDT"},
+        {channel: "tickers", instId: "DOT-USDT"},
+        {channel: "tickers", instId: "XRP-USDT"},
+        {channel: "tickers", instId: "ARB-USDT"},
+        {channel: "tickers", instId: "NEAR-USDT"},
+        {channel: "tickers", instId: "MATIC-USDT"},
+      ],
+      op: "subscribe"
+    });
+    socket.value?.send(subscribeMessage);
+  });
+
+  // Listen for messages
+  socket.value.addEventListener('message', (event) => {
+    let data = JSON.parse(event.data);
+    data = data.data.map((item: ILiveData) => {
+      const difference = item.high24h - item.low24h
+      const percentage = (difference / item.low24h) * 100;
+      return{
+        ...item,
+        symbol: item.instId,
+        difference_24: percentage.toFixed(2),
+        formattedPrice: parseFloat(item.last).toLocaleString() + " USDT"
+      }
+    })
+    
+    // Update the liveData array with the new data
+    liveData.value.push(data);
+  });
+
+  // Handle errors
+  socket.value.addEventListener('error', (event) => {
+    console.error('WebSocket error:', event);
+    status.value = 'Error occurred';
+  });
+
+  // Connection closed
+  socket.value.addEventListener('close', (event) => {
+    console.log('WebSocket connection closed:', event);
+    status.value = 'Disconnected. Reconnecting...';
+
+    // Attempt to reconnect after 5 seconds
+    setTimeout(() => {
+      connectWebSocket();
+    }, 5000);
+  });
+
+}
+
+onMounted(() => {
+  getCoinsData()
+  connectWebSocket()
+})
+
+onUnmounted(() => {
+  // Close the WebSocket connection when the component is unmounting
+  if (socket.value) {
+    socket.value.close();
+  }
+})
 </script>
 
 <template>
   <main class="container">
+    <h1>Live Data from WebSocket</h1>
+    <p>Status: {{ status }}</p>
+    <!-- <ul>
+      <li v-for="(item, index) in liveData" :key="index">
+        {{ item }}
+      </li>
+    </ul> -->
     <div class="header-container">
       <span>قیمت</span>
       <span>تغییر 24 ساعته</span>
       <span>جفت</span>
     </div>
-    <ul class="list">
+    <ul v-if="liveData.length > 0" class="list">
+      <li v-for="(ticker, i) in liveData" :key="i" class="list-item">
+        
+        <div dir="ltr">{{ ticker[0].formattedPrice }}</div>
+        <div>
+          <div class="badge" dir="ltr"
+            :class="ticker[0].difference_24 > 1 ? 'bg-success text-success' : 'bg-error text-error'">
+            {{ ticker[0].difference_24 }} %
+          </div>
+        </div>
+        <div>{{ ticker[0].symbol }}</div>
+      </li>
+    </ul>
+    <ul v-else class="list">
       <li v-for="(ticker, i) in tickers" :key="i" class="list-item">
-        <div dir="ltr">{{ ticker.last }} USDT</div>
+        
+        <div dir="ltr">{{ ticker.formattedPrice }}</div>
         <div>
           <div class="badge" dir="ltr"
             :class="ticker.difference_24 > 1 ? 'bg-success text-success' : 'bg-error text-error'">
@@ -53,10 +150,11 @@ onMounted(getCoinsData)
 </template>
 
 <style scoped>
-.container{
+.container {
   width: clamp(300px, 100%, 600px);
   margin-inline: auto;
 }
+
 .header-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -79,7 +177,7 @@ onMounted(getCoinsData)
   justify-content: center;
   padding: 15px 10px;
   text-align: center;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .badge {
