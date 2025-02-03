@@ -1,14 +1,17 @@
 ---
-import CoinsList from '../components/CoinsList.vue';
-import '../assets/styles/main.css';
+import CoinsList from '../components/CoinsList.vue'
+import '../assets/styles/main.css'
 ---
 
 <html>
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Home</title>
   </head>
   <body>
-  <CoinsList client:load/>
+    <header class="container" style="padding-inline: 40px;">
+      <a href="/faq" class="btn"> سوالات متداول </a>
+    </header>
+    <CoinsList client:load />
   </body>
 </html>
