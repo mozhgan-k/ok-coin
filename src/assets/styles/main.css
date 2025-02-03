@@ -48,5 +48,8 @@ a{
   background-color: #5a4bd2;
   border-radius: 7px;
   padding: 10px;
-  color: #fff
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
