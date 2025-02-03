@@ -1,6 +1,37 @@
 # ok-coin
 
-This template should help get you started developing with Vue 3 in Vite.
+This template create with Vue3 and Astro web framework in two modes client-side and server-side
+
+for setup this template, please follow below commands:
+
+## Project Setup
+
+```sh
+yarn install
+```
+### Run astro build
+
+```sh
+yarn build
+```
+
+### Run astro dev
+
+```sh
+yarn dev
+```
+
+### Type-Check, Compile and Minify for Production
+
+```sh
+yarn build
+```
+
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
+yarn lint
+```
 
 ## Recommended IDE Setup
 
@@ -13,27 +44,3 @@ TypeScript cannot handle type information for `.vue` imports by default, so we r
 ## Customize configuration
 
 See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-pnpm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-pnpm dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-pnpm build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-pnpm lint
-```
