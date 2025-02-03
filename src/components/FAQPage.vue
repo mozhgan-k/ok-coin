@@ -60,6 +60,6 @@ const FAQs: Ref<IFAQ[] | null> = ref(props.faqs || null);
 }
 
 .faq-child-container {
-  margin-top: 20px;
+  margin: 20px 0;
 }
 </style>
