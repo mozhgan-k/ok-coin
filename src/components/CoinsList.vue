@@ -58,7 +58,7 @@ const connectWebSocket = () => {
 
   // Listen for messages
   socket.value.addEventListener('message', (event) => {
-    let data = JSON.parse(event.data);
+    const data = JSON.parse(event.data);
     const updatedData = data.data.map((item: ILiveData) => {
       const difference = parseFloat(item.high24h) - parseFloat(item.low24h);
       const percentage = (difference / parseFloat(item.low24h)) * 100;
@@ -136,26 +136,26 @@ onUnmounted(() => {
         <div dir="ltr">{{ ticker.formattedPrice }}</div>
         <div>
           <div class="badge" dir="ltr"
-            :class="ticker.difference_24 > 1 ? 'bg-success text-success' : 'bg-error text-error'">
+               :class="ticker.difference_24 > 1 ? 'bg-success text-success' : 'bg-error text-error'">
             {{ ticker.difference_24 }} %
           </div>
         </div>
         <div>{{ ticker.symbol }}</div>
       </li>
     </ul>
-<!--    <ul v-else class="list">-->
-<!--      <li v-for="(ticker, i) in tickers" :key="i" class="list-item">-->
+    <!--    <ul v-else class="list">-->
+    <!--      <li v-for="(ticker, i) in tickers" :key="i" class="list-item">-->
 
-<!--        <div dir="ltr">{{ ticker.formattedPrice }}</div>-->
-<!--        <div>-->
-<!--          <div class="badge" dir="ltr"-->
-<!--            :class="ticker.difference_24 > 1 ? 'bg-success text-success' : 'bg-error text-error'">-->
-<!--            {{ ticker.difference_24 }} %-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div>{{ ticker.symbol }}</div>-->
-<!--      </li>-->
-<!--    </ul>-->
+    <!--        <div dir="ltr">{{ ticker.formattedPrice }}</div>-->
+    <!--        <div>-->
+    <!--          <div class="badge" dir="ltr"-->
+    <!--            :class="ticker.difference_24 > 1 ? 'bg-success text-success' : 'bg-error text-error'">-->
+    <!--            {{ ticker.difference_24 }} %-->
+    <!--          </div>-->
+    <!--        </div>-->
+    <!--        <div>{{ ticker.symbol }}</div>-->
+    <!--      </li>-->
+    <!--    </ul>-->
   </main>
 </template>
 
