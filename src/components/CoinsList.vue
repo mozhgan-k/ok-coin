@@ -160,10 +160,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.container {
-  width: clamp(300px, 100%, 600px);
-  margin-inline: auto;
-}
 
 .header-container {
   display: grid;
