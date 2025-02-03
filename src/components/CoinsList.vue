@@ -9,7 +9,7 @@ const getCoinsData = async () => {
   try {
     const response = await fetch('https://api.ok-ex.io/oapi/v1/market/tickers');
     if (!response.ok) {
-      throw new Error('There is a problem with network');
+      console.log('There is a problem with network')
     }
     const jsonResponse = await response.json();
     tickers.value = jsonResponse.tickers.map((item: ITicker) => {
@@ -58,20 +58,38 @@ const connectWebSocket = () => {
 
   // Listen for messages
   socket.value.addEventListener('message', (event) => {
-    let data = JSON.parse(event.data);
-    data = data.data.map((item: ILiveData) => {
-      const difference = item.high24h - item.low24h
-      const percentage = (difference / item.low24h) * 100;
-      return{
-        ...item,
-        symbol: item.instId,
+    const data = JSON.parse(event.data);
+    const updatedData = data.data.map((item: ILiveData) => {
+      const difference = parseFloat(item.high24h) - parseFloat(item.low24h);
+      const percentage = (difference / parseFloat(item.low24h)) * 100;
+      let symbol = ""
+      if (String(item.instId).includes("-")) {
+        symbol = item.instId.split("-")[0];
+      } else {
+        symbol = item.instId
+      }
+      return {
+        symbol: symbol,
         difference_24: percentage.toFixed(2),
         formattedPrice: parseFloat(item.last).toLocaleString() + " USDT"
-      }
-    })
+      };
+    });
 
-    // Update the liveData array with the new data
-    liveData.value.push(data);
+    // Update the liveData array with the new data, only modifying the fields that changed
+    updatedData.forEach((newItem) => {
+      const existingItemIndex = liveData.value.findIndex((item) => item.symbol === newItem.symbol);
+
+      if (existingItemIndex !== -1) {
+        // Update the specific fields of the existing item
+        const existingItem = liveData.value[existingItemIndex];
+        existingItem.difference_24 = newItem.difference_24;
+        existingItem.formattedPrice = newItem.formattedPrice;
+        liveData.value = [...liveData.value]
+      } else {
+        // If the item doesn't exist, push new item
+        liveData.value.push(newItem);
+      }
+    });
   });
 
   // Handle errors
@@ -108,34 +126,13 @@ onUnmounted(() => {
 
 <template>
   <main class="container">
-    <h1>Live Data from WebSocket</h1>
-    <p>Status: {{ status }}</p>
-    <!-- <ul>
-      <li v-for="(item, index) in liveData" :key="index">
-        {{ item }}
-      </li>
-    </ul> -->
     <div class="header-container">
       <span>قیمت</span>
       <span>تغییر 24 ساعته</span>
       <span>جفت</span>
     </div>
-    <!--    <ul v-if="liveData.length > 0" class="list">-->
-    <!--      <li v-for="(ticker, i) in liveData" :key="i" class="list-item">-->
-    <!--        -->
-    <!--        <div dir="ltr">{{ ticker[0].formattedPrice }}</div>-->
-    <!--        <div>-->
-    <!--          <div class="badge" dir="ltr"-->
-    <!--            :class="ticker[0].difference_24 > 1 ? 'bg-success text-success' : 'bg-error text-error'">-->
-    <!--            {{ ticker[0].difference_24 }} %-->
-    <!--          </div>-->
-    <!--        </div>-->
-    <!--        <div>{{ ticker[0].symbol }}</div>-->
-    <!--      </li>-->
-    <!--    </ul>-->
-    <ul class="list">
-      <li v-for="(ticker, i) in tickers" :key="i" class="list-item">
-
+    <ul v-if="liveData.length" class="list">
+      <li v-for="(ticker, i) in liveData" :key="i" class="list-item">
         <div dir="ltr">{{ ticker.formattedPrice }}</div>
         <div>
           <div class="badge" dir="ltr"
@@ -146,6 +143,19 @@ onUnmounted(() => {
         <div>{{ ticker.symbol }}</div>
       </li>
     </ul>
+    <!--    <ul v-else class="list">-->
+    <!--      <li v-for="(ticker, i) in tickers" :key="i" class="list-item">-->
+
+    <!--        <div dir="ltr">{{ ticker.formattedPrice }}</div>-->
+    <!--        <div>-->
+    <!--          <div class="badge" dir="ltr"-->
+    <!--            :class="ticker.difference_24 > 1 ? 'bg-success text-success' : 'bg-error text-error'">-->
+    <!--            {{ ticker.difference_24 }} %-->
+    <!--          </div>-->
+    <!--        </div>-->
+    <!--        <div>{{ ticker.symbol }}</div>-->
+    <!--      </li>-->
+    <!--    </ul>-->
   </main>
 </template>
 
@@ -188,6 +198,6 @@ onUnmounted(() => {
   align-items: center;
   max-width: 60px;
   margin-inline: auto;
-  font-size: 13px;
+  font-size: 12px;
 }
 </style>

@@ -16,9 +16,9 @@ export interface ITicker {
 export interface ILiveData {
   best_ask: string;
   best_bid: number;
-  high24h: number
+  high24h: string
   last: string;
-  low24h: number;
+  low24h: string;
   open_24h: string;
   symbol: string;
   instId: string;
