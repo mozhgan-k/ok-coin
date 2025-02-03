@@ -1,7 +1,5 @@
 @import './base.css';
 
-
-
 #app {
   max-width: 1280px;
   margin: 0 auto;
@@ -26,4 +24,18 @@ ul{
 }
 .text-error{
   color: #C10007;
+}
+
+.bg-primary{
+  background-color: #5a4bd2;
+}
+
+.text-primary{
+  color: #5a4bd2;
+}
+
+.container {
+  width: clamp(300px, 100%, 600px);
+  margin-inline: auto;
+  padding: 40px 0;
 }

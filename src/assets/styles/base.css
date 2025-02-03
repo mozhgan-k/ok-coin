@@ -89,5 +89,5 @@ body{
 }
 
 *:not(i) {
-  font-family: 'iran-sans', sans-serif !important;
+  font-family: 'iran-sans', sans-serif, Roboto !important;
 }
