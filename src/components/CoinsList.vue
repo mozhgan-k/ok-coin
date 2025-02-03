@@ -3,54 +3,50 @@ import { onMounted, onUnmounted, ref } from "vue";
 import type { ILiveData, ITicker } from "@/types";
 import type { Ref } from "vue";
 
-const tickers: Ref<ITicker[] | null> = ref(null)
+const allowedCoins = [
+  "SOL-USDT", "BTC-USDT", "ETH-USDT", "OP-USDT", "AVAX-USDT",
+  "DOT-USDT", "XRP-USDT", "ARB-USDT", "NEAR-USDT", "MATIC-USDT"
+];
 
 const getCoinsData = async () => {
   try {
     const response = await fetch('https://api.ok-ex.io/oapi/v1/market/tickers');
     if (!response.ok) {
-      console.log('There is a problem with network')
+      console.error('There is a problem with the network');
+      return;
     }
     const jsonResponse = await response.json();
-    tickers.value = jsonResponse.tickers.map((item: ITicker) => {
-      const difference = item.high_24h - item.low_24h
-      const percentage = (difference / item.low_24h) * 100;
-      return {
-        ...item,
-        difference_24: percentage.toFixed(2),
-        formattedPrice: parseFloat(item.last).toLocaleString() + " USDT"
-      }
-    })
+    
+    const processedData = jsonResponse.tickers.filter((item: ITicker) => allowedCoins.includes(item.instId))
+      .map((item: ITicker) => {
+        const difference = item.high_24h - item.low_24h;
+        const percentage = (difference / item.low_24h) * 100;
+        return {
+          symbol: item.instId,
+          difference_24: percentage.toFixed(2),
+          formattedPrice: parseFloat(item.last).toLocaleString() + " USDT"
+        };
+      });
+
+    liveData.value = processedData;
 
   } catch (error) {
-    console.error('error while getting tickers', error);
+    console.error('Error while getting tickers', error);
   }
-}
+};
+
 
 const socket: Ref<WebSocket | null> = ref(null)
-const status = ref("Disconnected")
 const liveData:Ref<ITicker[]> = ref([])
 const connectWebSocket = () => {
   socket.value = new WebSocket("wss://wsg.ok-ex.io/ws")
 
   socket.value.addEventListener('open', (event) => {
     console.log('WebSocket connection opened:', event);
-    status.value = 'Connected';
 
-    // Send a subscription message to the server
+    // Subscribe to allowed coins
     const subscribeMessage = JSON.stringify({
-      args: [
-        {channel: "tickers", instId: "SOL-USDT"},
-        {channel: "tickers", instId: "BTC-USDT" },
-        {channel: "tickers", instId: "ETH-USDT"},
-        {channel: "tickers", instId: "OP-USDT"},
-        {channel: "tickers", instId: "AVAX-USDT"},
-        {channel: "tickers", instId: "DOT-USDT"},
-        {channel: "tickers", instId: "XRP-USDT"},
-        {channel: "tickers", instId: "ARB-USDT"},
-        {channel: "tickers", instId: "NEAR-USDT"},
-        {channel: "tickers", instId: "MATIC-USDT"},
-      ],
+      args: allowedCoins.map((instId) => ({ channel: "tickers", instId })),
       op: "subscribe"
     });
     socket.value?.send(subscribeMessage);
@@ -95,13 +91,11 @@ const connectWebSocket = () => {
   // Handle errors
   socket.value.addEventListener('error', (event) => {
     console.error('WebSocket error:', event);
-    status.value = 'Error occurred';
   });
 
   // Connection closed
   socket.value.addEventListener('close', (event) => {
     console.log('WebSocket connection closed:', event);
-    status.value = 'Disconnected. Reconnecting...';
 
     // Attempt to reconnect after 5 seconds
     setTimeout(() => {
@@ -143,19 +137,6 @@ onUnmounted(() => {
         <div>{{ ticker.symbol }}</div>
       </li>
     </ul>
-    <!--    <ul v-else class="list">-->
-    <!--      <li v-for="(ticker, i) in tickers" :key="i" class="list-item">-->
-
-    <!--        <div dir="ltr">{{ ticker.formattedPrice }}</div>-->
-    <!--        <div>-->
-    <!--          <div class="badge" dir="ltr"-->
-    <!--            :class="ticker.difference_24 > 1 ? 'bg-success text-success' : 'bg-error text-error'">-->
-    <!--            {{ ticker.difference_24 }} %-->
-    <!--          </div>-->
-    <!--        </div>-->
-    <!--        <div>{{ ticker.symbol }}</div>-->
-    <!--      </li>-->
-    <!--    </ul>-->
   </main>
 </template>
 
