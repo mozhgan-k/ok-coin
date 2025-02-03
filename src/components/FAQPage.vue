@@ -2,6 +2,7 @@
 import {ref, type Ref} from "vue";
 import type {IFAQ} from "../types/faq"
 import ExpansionPanel from "./ExpansionPanel.vue";
+import ChevronLeft from "./Icons/ChevronLeft.vue"
 
 const props = defineProps<{ faqs: { data: IFAQ[] } | null }>();
 const FAQs: Ref<IFAQ[] | null> = ref(props.faqs || null);
@@ -10,6 +11,10 @@ const FAQs: Ref<IFAQ[] | null> = ref(props.faqs || null);
 
 <template>
   <main class="faq-container">
+    <a href="/">
+      <ChevronLeft width="13px" height="13px" style="margin-left: 10px; transform: rotate(180deg);"/>
+      بازگشت
+    </a>
     <template v-for="faq in FAQs" :key="faq._id">
       <div class="faq-title-container">
         <img src="/okex.svg" alt="okex-faq">
