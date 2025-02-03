@@ -69,7 +69,7 @@ const connectWebSocket = () => {
         formattedPrice: parseFloat(item.last).toLocaleString() + " USDT"
       }
     })
-    
+
     // Update the liveData array with the new data
     liveData.value.push(data);
   });
@@ -120,26 +120,26 @@ onUnmounted(() => {
       <span>تغییر 24 ساعته</span>
       <span>جفت</span>
     </div>
-    <ul v-if="liveData.length > 0" class="list">
-      <li v-for="(ticker, i) in liveData" :key="i" class="list-item">
-        
-        <div dir="ltr">{{ ticker[0].formattedPrice }}</div>
-        <div>
-          <div class="badge" dir="ltr"
-            :class="ticker[0].difference_24 > 1 ? 'bg-success text-success' : 'bg-error text-error'">
-            {{ ticker[0].difference_24 }} %
-          </div>
-        </div>
-        <div>{{ ticker[0].symbol }}</div>
-      </li>
-    </ul>
-    <ul v-else class="list">
+    <!--    <ul v-if="liveData.length > 0" class="list">-->
+    <!--      <li v-for="(ticker, i) in liveData" :key="i" class="list-item">-->
+    <!--        -->
+    <!--        <div dir="ltr">{{ ticker[0].formattedPrice }}</div>-->
+    <!--        <div>-->
+    <!--          <div class="badge" dir="ltr"-->
+    <!--            :class="ticker[0].difference_24 > 1 ? 'bg-success text-success' : 'bg-error text-error'">-->
+    <!--            {{ ticker[0].difference_24 }} %-->
+    <!--          </div>-->
+    <!--        </div>-->
+    <!--        <div>{{ ticker[0].symbol }}</div>-->
+    <!--      </li>-->
+    <!--    </ul>-->
+    <ul class="list">
       <li v-for="(ticker, i) in tickers" :key="i" class="list-item">
-        
+
         <div dir="ltr">{{ ticker.formattedPrice }}</div>
         <div>
           <div class="badge" dir="ltr"
-            :class="ticker.difference_24 > 1 ? 'bg-success text-success' : 'bg-error text-error'">
+               :class="ticker.difference_24 > 1 ? 'bg-success text-success' : 'bg-error text-error'">
             {{ ticker.difference_24 }} %
           </div>
         </div>

@@ -1,0 +1,15 @@
+---
+import coinsList from '../components/coinsList.vue';  // Vue component for CSR
+---
+
+<html>
+  <head>
+    <title>Home</title>
+  </head>
+  <body>
+    <div id="coins">
+    <h1>Coins list</h1>
+      <coinsList client:load/>
+    </div>
+  </body>
+</html>
