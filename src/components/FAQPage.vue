@@ -3,19 +3,8 @@ import {ref, type Ref} from "vue";
 import type {IFAQ} from "../types/faq"
 import ExpansionPanel from "./ExpansionPanel.vue";
 
-const FAQs: Ref<IFAQ[] | null> = ref(null)
-
-try {
-  const response = await fetch(' https://azapi.ok-ex.io/server/api/support/faq');
-  if (!response.ok) {
-    console.log('There is a problem with network')
-  }
-  const jsonResponse = await response.json();
-  FAQs.value = jsonResponse.data
-
-} catch (error) {
-  console.error('error while getting FAQs', error);
-}
+const props = defineProps<{ faqs: { data: IFAQ[] } | null }>();
+const FAQs: Ref<IFAQ[] | null> = ref(props.faqs || null);
 
 </script>
 

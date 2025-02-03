@@ -1,6 +1,9 @@
 ---
 import FAQPage from '../components/FAQPage.vue';
 import '../assets/styles/main.css';
+const response = await fetch('https://azapi.ok-ex.io/server/api/support/faq');
+const faqData = response.ok ? await response.json() : null;
+const props = { faqs: faqData.data };
 ---
 
 <html>
@@ -11,7 +14,7 @@ import '../assets/styles/main.css';
   <body>
     <div id="faq">
       <!-- SSR render of Vue component -->
-      <FAQPage />
+      <FAQPage {...props} client:load /> 
     </div>
   </body>
 </html>
