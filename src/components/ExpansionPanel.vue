@@ -10,7 +10,7 @@ const props = defineProps<{
 
 const isOpen = ref(props.defaultOpen);
 const toggleOpen = () => {
-  console.log("open", isOpen.value)
+  isOpen.value = !isOpen.value
 }
 </script>
 
@@ -21,9 +21,11 @@ const toggleOpen = () => {
       <ChevronLeft v-if="!isOpen" width="15px" height="18px" class="text-primary"/>
       <ChevronDown v-else width="15px" height="18px" class="text-primary"/>
     </div>
-    <div v-show="isOpen" class="panel-content">
-      <slot></slot>
-    </div>
+    <Transition name="expand">
+      <div v-if="isOpen" class="panel-content">
+        <slot></slot>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -47,11 +49,29 @@ const toggleOpen = () => {
 }
 
 .panel-content {
-  padding: 10px;
+  padding: 20px;
   background-color: #fafafa;
+  font-size: 14px;
+  text-align: justify;
+  line-height: 32px;
+  overflow: hidden;
 }
 
 .panel-title{
   font-size: 14px;
+}
+
+.expand-enter-active, .expand-leave-active {
+  transition: max-height 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+.expand-enter-from, .expand-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
+
+.expand-enter-to, .expand-leave-from {
+  max-height: fit-content; /* Adjust as needed */
+  opacity: 1;
 }
 </style>
