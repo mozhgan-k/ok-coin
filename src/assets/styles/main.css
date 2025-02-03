@@ -11,6 +11,10 @@ ul{
   list-style: none;
 }
 
+a{
+  text-decoration: none;
+}
+
 .bg-success{
   background-color: #affad5;
 }
@@ -38,4 +42,11 @@ ul{
   width: clamp(300px, 100%, 600px);
   margin-inline: auto;
   padding: 40px 0;
+}
+
+.btn{
+  background-color: #5a4bd2;
+  border-radius: 7px;
+  padding: 10px;
+  color: #fff
 }
