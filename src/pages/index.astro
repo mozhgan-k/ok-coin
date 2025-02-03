@@ -1,5 +1,6 @@
 ---
-import coinsList from '../components/coinsList.vue';  // Vue component for CSR
+import CoinsList from '../components/CoinsList.vue';
+import '../assets/styles/main.css';
 ---
 
 <html>
@@ -7,9 +8,6 @@ import coinsList from '../components/coinsList.vue';  // Vue component for CSR
     <title>Home</title>
   </head>
   <body>
-    <div id="coins">
-    <h1>Coins list</h1>
-      <coinsList client:load/>
-    </div>
+  <CoinsList client:load/>
   </body>
 </html>
